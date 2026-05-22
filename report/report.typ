@@ -1,4 +1,4 @@
-#import "report_conf.typ": *
+#import "conf.typ": *
 
 #show: conf.with(
   title: "Unsupervised Learning on Country Data",
@@ -39,24 +39,15 @@
   supplement: "Table",
 )
 
+
 === Column Distributions
-#lorem(40)
-
 #figure(
-  image("../plots/column_distributions.png", width: 60%),
-  caption: "Histograms and distributions for the columns",
-) <fig:col_distributions>
-
-#figure(
-  image("../plots/column_distributions.png", width: 60%),
+  image("../images/2_distributions_No_Scaling.png", width: 75%),
   caption: "Columns distribution of X and Y, after a transformation.",
-) <fig:t_col_distributions>
-
+) <fig:dists_no_scaling>
 
 
 === Correlation Matrix
-#lorem(40)
-
 #figure(
   image("../plots/correlation.png", width: 60%),
   caption: "Correlation matrix",
@@ -69,13 +60,54 @@
 ) <fig:scatterplots>
 
 
-== Clustering
-#lorem(40)
+=== t-SNE
+#figure(
+  image("../images/tsne_plot.png", width: 60%),
+  caption: "",
+) <fig:tsne>
+
+// #figure(
+//   image("../images/2_distributions_Power_Transform.png", width: 60%),
+//   caption: "Histograms and distributions for the columns",
+// ) <fig:dists_pwr_scaling>
+
+=== Preprocessing Strategy
+// #figure(
+//   image("../images/2_comparison_distributions.png", width: 60%),
+//   caption: "Columns distribution of X and Y, after a transformation.",
+// ) <fig:dists_combined>
+
+// #figure(
+//   image("../images/2_comparison_boxplots.png", width: 60%),
+//   caption: "Columns distribution of X and Y, after a transformation.",
+// ) <fig:boxplots_combined>
+
 
 #figure(
-  image("../plots/correlation.png", width: 60%),
-  caption: "Results of clustering algorithms.",
-) <fig:clustering_results>
+  grid(
+    columns: 2,
+    rows: 1,
+    gutter: 10pt,
+    image("../images/2_comparison_distributions.png", width: 100%), 
+    image("../images/2_comparison_boxplots.png", width: 104%),
+  ),
+  caption: "Diocan"
+)
+
+
+
+== Clustering
+#figure(
+  grid(
+    columns: 1,
+    rows: 3,
+    image("../images/3_silhouette_comparison.png", width: 70%), 
+    image("../images/3_davies_bouldin_comparison.png", width: 70%),
+    image("../images/3_calinski_harabasz_comparison.png", width: 70%)
+  ),
+  caption: "Diocan"
+)
+
 
 === Clustering Validation
 
