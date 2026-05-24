@@ -1,4 +1,5 @@
 #import "conf.typ": *
+#import "@preview/subpar:0.2.2": grid as subgrid
 
 #show: conf.with(
   title: "Unsupervised Learning on Country Data",
@@ -19,8 +20,6 @@
 )
 
 == Exploratory Data Analysis
-#lorem(40)
-
 #let data_dict = csv("../data/data-dictionary.csv")
 
 #figure(
@@ -42,58 +41,42 @@
 
 === Column Distributions
 #figure(
-  image("../images/2_distributions_No_Scaling.png", width: 75%),
+  image("../images/distributions.png", width: 75%),
   caption: "Columns distribution of X and Y, after a transformation.",
 ) <fig:dists_no_scaling>
 
 
-=== Correlation Matrix
-#figure(
-  image("../plots/correlation.png", width: 60%),
-  caption: "Correlation matrix",
-) <fig:corr_matrix>
-
-
-#figure(
-  image("../plots/pairwise_scatterplots.png", width: 90%),
-  caption: "Pairwise scatterplot.",
-) <fig:scatterplots>
+// #figure(
+//   image("../plots/pairwise_scatterplots.png", width: 90%),
+//   caption: "Pairwise scatterplot.",
+// ) <fig:scatterplots>
 
 
 === t-SNE
 #figure(
-  image("../images/tsne_plot.png", width: 60%),
-  caption: "",
+  image("../images/tsne.png", width: 60%),
+  caption: "t-SNE ignorant analysis",
 ) <fig:tsne>
 
-// #figure(
-//   image("../images/2_distributions_Power_Transform.png", width: 60%),
-//   caption: "Histograms and distributions for the columns",
-// ) <fig:dists_pwr_scaling>
 
 === Preprocessing Strategy
-// #figure(
-//   image("../images/2_comparison_distributions.png", width: 60%),
-//   caption: "Columns distribution of X and Y, after a transformation.",
-// ) <fig:dists_combined>
-
-// #figure(
-//   image("../images/2_comparison_boxplots.png", width: 60%),
-//   caption: "Columns distribution of X and Y, after a transformation.",
-// ) <fig:boxplots_combined>
-
-
-#figure(
-  grid(
-    columns: 2,
-    rows: 1,
-    gutter: 10pt,
-    image("../images/2_comparison_distributions.png", width: 100%), 
-    image("../images/2_comparison_boxplots.png", width: 104%),
-  ),
-  caption: "Diocan"
+#subgrid(
+  columns: 2,
+  gutter: 10pt,
+  figure(image("../images/correlations.png", width: 100%),  caption: "Raw/Standard Scaled"), <a>,
+  figure(image("../images/correlations_pwr.png", width: 100%), caption: "Power Transformed"), <b>,
+  caption: [Correlations],
+  label: <fig-correlations>
 )
 
+#subgrid(
+  columns: 2,
+  gutter: 10pt,
+  figure(image("../images/comparison_distributions.png", width: 100%),  caption: "Distributions"), <a>,
+  figure(image("../images/comparison_boxplots.png", width: 100%), caption: "Box Plots"), <b>,
+  caption: [Comparison],
+  label: <fig-comparison>
+)
 
 
 == Clustering
@@ -105,7 +88,7 @@
     image("../images/3_davies_bouldin_comparison.png", width: 70%),
     image("../images/3_calinski_harabasz_comparison.png", width: 70%)
   ),
-  caption: "Diocan"
+  caption: "Clustering Evaluation"
 )
 
 
