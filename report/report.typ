@@ -128,13 +128,41 @@
 #subgrid(
   columns: 2,
   gutter: 10pt,
-  figure(image("../images/algo_distribution_silhouette_score.png", width: 100%)),<a>,
-  figure(image("../images/algo_distribution_davies_bouldin_index.png", width: 100%)),<b>,
+  figure(image("../images/comparison_silhouette_score.png", width: 100%)),<a>,
+  figure(image("../images/comparison_davies_bouldin_index.png", width: 100%)),<b>,
   caption: [index comparison],
   label: <agglomerative_visual>
 )
 
-#figure(image("../images/proximity_matrices.png", width: 100%)),<c>,
+#let model-data = csv("../data/best_algo.csv")
+#let headers = model-data.at(0)
+#let rows = model-data.slice(1)
+
+#align(center)[
+  #v(1em)
+  #text(weight: "bold", size: 14pt)[Best Model Configurations Summary]
+  #v(0.5em)
+  
+  #table(
+    // Give the configuration string column more relative width (3 fractions)
+    columns: (1.2fr, 3.5fr, 1fr, 1fr, 1.2fr),
+    align: (col, row) => (
+      if col == 1 { left + horizon } // Left-align configuration strings
+      else { center + horizon }      // Center-align metrics and names
+    ),
+    fill: (col, row) => if row == 0 { rgb("f0f4f8") } else { none },
+    stroke: 0.5pt + luma(150),
+    inset: 8pt,
+    
+    // Map headers with bold text
+    ..headers.map(h => strong(h)),
+    
+    // Flatten rows out sequentially into table cells
+    ..rows.flatten()
+  )
+]
+
+#figure(image("../images/proximity_matrices.png", width: 100%), caption: "")
 
 // #subgrid(
 //   columns: 3,
@@ -173,8 +201,8 @@
   )
 ]
 
-#figure(image("../images/tsne_kmeans.png", width: 60%))
-#figure(image("../images/map_kmeans.png", width: 100%))
+#figure(image("../images/kmeans_tsne.png", width: 60%), caption: "")
+#figure(image("../images/kmeans_map.png", width: 100%), caption: "")
 
 // #subgrid(
 //   columns: 2,
@@ -227,14 +255,8 @@
   )
 ]
 
-#subgrid(
-  columns: 2,
-  gutter: 10pt,
-  figure(image("../images/tsne_agglomerative.png", width: 100%)),<a>,
-  figure(image("../images/map_agglomerative.png", width: 100%)),<b>,
-  caption: [Agglomerative in low dimension and geomap],
-  label: <agglomerative_visual>
-)
+#figure(image("../images/agglomerative_tsne.png", width: 60%), caption: "")
+#figure(image("../images/agglomerative_map.png", width: 100%), caption: "")
 
 // #let data_dict = csv("../data/agglomerative_centroids.csv")
 
@@ -276,12 +298,12 @@
     }).flatten()
   )
 ]
+#figure(image("../images/hdbscan_tsne.png", width: 60%), caption: "")
+#figure(image("../images/hdbscan_map.png", width: 100%), caption: "")
 
 #subgrid(
   columns: 2,
   gutter: 10pt,
-  figure(image("../images/tsne_hdbscan.png", width: 100%)),<a>,
-  figure(image("../images/map_hdbscan.png", width: 100%)),<b>,
   caption: [HDBSCAN in low dimension and geomap],
   label: <dbscan_visual>
 )
@@ -348,8 +370,8 @@
 
 === PC Algorithm
 #figure(
-  image("../images/causal_dag_hierarchical.png", width: 90%),
+  image("../images/causal_dag.png", width: 90%),
   caption: "Directed Acyclic Graph builded using PC",
 ) <fig:dag_bn>
 
-#figure(image("../images/correlations_pwr.png", width: 100%), caption: "Power Transformed"), <b>,
+#figure(image("../images/correlations_pwr.png", width: 50%), caption: "Power Transformed")

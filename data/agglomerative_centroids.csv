@@ -1,4 +1,4 @@
-Cluster,child_mort,exports,health,imports,income,inflation,life_expec,total_fer,gdpp,Observation_Percentage
+Cluster,child_mort,exports,health,imports,income,inflation,life_expec,total_fer,gdpp,PCT
 0,54.584,33.932,6.165,44.676,6983.708,9.506,66.333,3.584,3422.887,63.47
 1,7.033,46.633,8.235,44.685,34367.037,3.35,78.261,1.775,29012.407,32.34
 2,6.2,144.96,6.594,132.9,51640.0,-0.005,79.62,1.672,46440.0,2.99
