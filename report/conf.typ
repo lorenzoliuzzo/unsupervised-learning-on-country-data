@@ -57,7 +57,6 @@
   body
 
   if references != none {
-    pagebreak(weak: true)
-    bibliography(references, style: "ieee")
+    references
   }
 }
