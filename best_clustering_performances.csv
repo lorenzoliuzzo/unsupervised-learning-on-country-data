@@ -1,0 +1,4 @@
+Algorithm_Configuration,Silhouette_Score,Rank_Sil,Davies_Bouldin_Index,Rank_DB,Valid_Clusters
+"KMEANS - {'algorithm': 'lloyd', 'init': 'random', 'n_clusters': 2, 'random_state': 42}",0.337,1,1.132,1,2
+"AGGLOMERATIVE - {'linkage': 'complete', 'metric': 'euclidean', 'n_clusters': 5}",0.259,6,0.839,1,5
+"HDBSCAN - {'cluster_selection_method': 'eom', 'metric': 'manhattan', 'min_cluster_size': 12}",0.532,1,0.61,3,2
