@@ -45,24 +45,14 @@
 == t-SNE Visualization
 
 #figure(
-  image("../images/tsne.png", width: 60%),
+  image("../images/tsne.png", width: 50%),
   caption: "t-SNE (perplexity=10).",
 ) <fig:t_sne>
 
 == Column Distributions
 
-// #subgrid(
-//   columns: 2,
-//   gutter: 10pt,
-//   figure(image("../images/distributions.png", width: 100%)),<a>,
-//   // figure(image("../images/pairwise_scatterplots.png", width: 100%)),<b>,
-//   caption: [Columns distribution of X and Y after a transformation (left),
-//     and pairwise scatterplot (right)],
-//   label: <kmeans_visual>
-// )
-
 #figure(
-  image("../images/distributions.png", width: 75%),
+  image("../images/distributions.png", width: 55%),
   caption: "Columns distribution of X and Y, after a transformation.",
 ) <fig:dists_no_scaling>
 
@@ -104,25 +94,6 @@
 
 == Cluster Analysis
 
-=== Clustering Optimization
-
-#figure(
-  image("../images/diagnostic_kmeans.png", width: 90%),
-  caption: "Silouhette and Davies Bouldin index for best K-means.",
-) <fig:kmeans_diagnostic>
-
-
-#figure(
-  image("../images/diagnostic_agglomerative.png", width: 90%),
-  caption: "Silouhette and Daviesâ€“Bouldin index for best Agglomerative",
-) <fig:agglomerative_diagnostic>
-
-#figure(
-  image("../images/diagnostic_hdbscan.png", width: 90%),
-  caption: "Silouhette and Daviesâ€“Bouldin index for best HDBSCAN",
-) <fig:dbscan_diagnostic>
-
-
 === Clustering Comparison
 
 #subgrid(
@@ -134,215 +105,111 @@
   label: <agglomerative_visual>
 )
 
-#let model-data = csv("../data/best_algo.csv")
-#let headers = model-data.at(0)
-#let rows = model-data.slice(1)
 
-#align(center)[
-  #v(1em)
-  #text(weight: "bold", size: 14pt)[Best Model Configurations Summary]
-  #v(0.5em)
-  
-  #table(
-    // Give the configuration string column more relative width (3 fractions)
-    columns: (1.2fr, 3.5fr, 1fr, 1fr, 1.2fr),
-    align: (col, row) => (
-      if col == 1 { left + horizon } // Left-align configuration strings
-      else { center + horizon }      // Center-align metrics and names
-    ),
-    fill: (col, row) => if row == 0 { rgb("f0f4f8") } else { none },
-    stroke: 0.5pt + luma(150),
-    inset: 8pt,
-    
-    // Map headers with bold text
-    ..headers.map(h => strong(h)),
-    
-    // Flatten rows out sequentially into table cells
-    ..rows.flatten()
-  )
-]
+#figure(
+  image("../images/diagnostic_kmeans.png", width: 90%),
+  caption: "Silouhette and Davies Bouldin index for best K-means.",
+) <fig:kmeans_diagnostic>
 
+#figure(
+  image("../images/diagnostic_agglomerative.png", width: 90%),
+  caption: "Silouhette and Davies Bouldin index for best Agglomerative",
+) <fig:agglomerative_diagnostic>
+
+#figure(
+  image("../images/diagnostic_hdbscan.png", width: 90%),
+  caption: "Silouhette and Davies Bouldin index for best HDBSCAN",
+) <fig:dbscan_diagnostic>
+
+=== Matrix
 #figure(image("../images/proximity_matrices.png", width: 100%), caption: "")
 
-// #subgrid(
-//   columns: 3,
-//   gutter: 10pt,
-//   figure(image("../images/kmeans_similaritymatrix.png", width: 100%)),<a>,
-//   figure(image("../images/agglomerative_similaritymatrix.png", width: 100%)),<b>,
-//   figure(image("../images/dbscan_similaritymatrix.png", width: 100%)),<c>,
-//   caption: [similarity matrix],
-//   label: <similarity_matrix>
-// )
+=== Centroids Comparison
+// 1. Load the generated datasets
+#let kmeans = csv("../data/kmeans_centroids.csv")
+#let agglo = csv("../data/agglomerative_centroids.csv")
+#let hdbscan = csv("../data/hdbscan_centroids.csv")
 
+// 2. Group them to iterate through dynamically
+#let datasets = (kmeans, agglo, hdbscan)
+#let method-names = ("K-Means", "Agglomerative", "HDBSCAN")
+#let features = kmeans.at(0).slice(1)
 
-=== Clustering executions
-// Load your specific generated CSV
+// Helper Functions: These safely extract data just in case a method 
+// (like DBSCAN) only managed to find 1 valid cluster.
+#let safe-val(data, r, c, is-pct) = {
+  if data.len() > r {
+    let val = data.at(r).at(c)
+    if is-pct { val + "%" } else { val }
+  } else { "-" }
+}
 
-=== K-Means
-#let data = csv("../data/kmeans_centroids.csv")
-#let headers = data.at(0)
+#let safe-col-name(data, r) = {
+  if data.len() > r { "Cluster " + data.at(r).at(0) } else { "-" }
+}
 
-#align(center)[
-  #table(
-    columns: headers.len(),
-    align: center + horizon,
-    fill: (col, row) => if row == 0 { luma(230) } else { none },
-    stroke: 0.5pt + luma(100),
+#figure(
+  caption: [Features of the Top 2 Centroids Across Clustering Methods],
+  table(
+    columns: (1.5fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
+    align: (col, row) => if col == 0 { center + horizon } else { center + horizon },
+    inset: 6pt,
     
-    // Render Header Row
-    ..headers.map(h => strong(h)),
+    stroke: (col, row) => (
+      top: if row == 0 { 1pt + black } else { none },
+      bottom: if row == 1 { 0.5pt + black } else if row == features.len() + 1 { 1pt + black } else { none }
+    ),
     
-    // Render Data Rows and append "%" to the last column
-    ..data.slice(1).map(row => {
-      let formatted_row = row.slice(0, -1)
-      formatted_row.push(row.last() + "%")
-      formatted_row
+    [],
+    ..method-names.map(m => table.cell(colspan: 2)[*#m*]),
+    
+    [*Feature*],
+    ..datasets.map(d => (
+      strong(safe-col-name(d, 1)), 
+      strong(safe-col-name(d, 2))  
+    )).flatten(),
+    
+    ..features.enumerate().map(((i, feat)) => {
+      let is-pct = feat == "Observation_Percentage"
+      let clean-feat = feat.replace("_", " ")       
+      (
+        clean-feat,
+        ..datasets.map(d => (
+          safe-val(d, 1, i + 1, is-pct),
+          safe-val(d, 2, i + 1, is-pct)
+        )).flatten()
+      )
     }).flatten()
   )
-]
-
-#figure(image("../images/kmeans_tsne.png", width: 60%), caption: "")
-#figure(image("../images/kmeans_map.png", width: 100%), caption: "")
-
-// #subgrid(
-//   columns: 2,
-//   gutter: 10pt,
-//   figure(image("../images/tsne_kmeans.png", width: 100%)),<a>,
-//   figure(image("../images/map_kmeans.png", width: 100%)),<b>,
-//   caption: [k-means in low dimension and geomap],
-//   label: <kmeans_visual>
-// )
-
-// #let data_dict = csv("../data/kmeans_centroids.csv")
-
-// #figure(
-//   table(
-//     columns: 9,
-//     stroke: none,
-//     align: center,
-//     table.hline(stroke: 1pt),
-//     table.header(..data_dict.first()),
-//     table.hline(stroke: 1pt),
-//     ..data_dict.slice(1).flatten(),
-//     table.hline(stroke: 1pt),
-//   ),
-//   gap: 15pt,
-//   caption: "K-means centroids",
-//   supplement: "Table",
-// )
-// 
-
-=== Agglomerative
-#let data = csv("../data/agglomerative_centroids.csv")
-#let headers = data.at(0)
-
-#align(center)[
-  #table(
-    columns: headers.len(),
-    align: center + horizon,
-    fill: (col, row) => if row == 0 { luma(230) } else { none },
-    stroke: 0.5pt + luma(100),
-    
-    // Render Header Row
-    ..headers.map(h => strong(h)),
-    
-    // Render Data Rows and append "%" to the last column
-    ..data.slice(1).map(row => {
-      let formatted_row = row.slice(0, -1)
-      formatted_row.push(row.last() + "%")
-      formatted_row
-    }).flatten()
-  )
-]
-
-#figure(image("../images/agglomerative_tsne.png", width: 60%), caption: "")
-#figure(image("../images/agglomerative_map.png", width: 100%), caption: "")
-
-// #let data_dict = csv("../data/agglomerative_centroids.csv")
-
-// #figure(
-//   table(
-//     columns: 9,
-//     stroke: none,
-//     align: center,
-//     table.hline(stroke: 1pt),
-//     table.header(..data_dict.first()),
-//     table.hline(stroke: 1pt),
-//     ..data_dict.slice(1).flatten(),
-//     table.hline(stroke: 1pt),
-//   ),
-//   gap: 15pt,
-//   caption: "Agglomerative centroids",
-//   supplement: "Table",
-// )
-
-==== HDBSCAN
-#let data = csv("../data/hdbscan_centroids.csv")
-#let headers = data.at(0)
-
-#align(center)[
-  #table(
-    columns: headers.len(),
-    align: center + horizon,
-    fill: (col, row) => if row == 0 { luma(230) } else { none },
-    stroke: 0.5pt + luma(100),
-    
-    // Render Header Row
-    ..headers.map(h => strong(h)),
-    
-    // Render Data Rows and append "%" to the last column
-    ..data.slice(1).map(row => {
-      let formatted_row = row.slice(0, -1)
-      formatted_row.push(row.last() + "%")
-      formatted_row
-    }).flatten()
-  )
-]
-#figure(image("../images/hdbscan_tsne.png", width: 60%), caption: "")
-#figure(image("../images/hdbscan_map.png", width: 100%), caption: "")
-
-#subgrid(
-  columns: 2,
-  gutter: 10pt,
-  caption: [HDBSCAN in low dimension and geomap],
-  label: <dbscan_visual>
 )
 
-// #let data_dict = csv("../data/HDBSCAN_centroids.csv")
+#subgrid(
+  columns: (22fr, 40fr),
+  gutter: 10pt,
+  figure(image("../images/kmeans_tsne.png", width: 100%), caption: ""), <a>,
+  figure(image("../images/kmeans_map.png", width: 100%), caption: ""), <b>,
+  caption: [],
+  label: <fig-dists-scaled>
+)
 
-// #figure(
-//   table(
-//     columns: 9,
-//     stroke: none,
-//     align: center,
-//     table.hline(stroke: 1pt),
-//     table.header(..data_dict.first()),
-//     table.hline(stroke: 1pt),
-//     ..data_dict.slice(1).flatten(),
-//     table.hline(stroke: 1pt),
-//   ),
-//   gap: 15pt,
-//   caption: "JDBSCAN centroids",
-//   supplement: "Table",
-// )
+#subgrid(
+  columns: (22fr, 40fr),
+  gutter: 10pt,
+  figure(image("../images/agglomerative_tsne.png", width: 100%),  caption: ""), <a>,
+  figure(image("../images/agglomerative_map.png", width: 100%), caption: ""), <b>,
+  caption: [Correlations],
+  label: <fig-dists-scaled>
+)
 
-// #let data_dict = csv("../data/clustering_summaries.csv")
+#subgrid(
+  columns: (22fr, 40fr),
+  gutter: 10pt,
+  figure(image("../images/hdbscan_tsne.png", width: 100%),  caption: ""), <a>,
+  figure(image("../images/hdbscan_map.png", width: 100%), caption: ""), <b>,
+  caption: [Correlations],
+  label: <fig-dists-scaled>
+)
 
-// #figure(
-//   table(
-//     columns: 4,
-//     stroke: none,
-//     align: center,
-//     table.hline(stroke: 1pt),
-//     table.header(..data_dict.first()),
-//     table.hline(stroke: 1pt),
-//     ..data_dict.slice(1).flatten(),
-//     table.hline(stroke: 1pt),
-//   ),
-//   gap: 15pt,
-//   caption: "Summary of the different results",
-//   supplement: "Table",
-// )
 
 // #figure(
 //   table(
@@ -373,5 +240,3 @@
   image("../images/causal_dag.png", width: 90%),
   caption: "Directed Acyclic Graph builded using PC",
 ) <fig:dag_bn>
-
-#figure(image("../images/correlations_pwr.png", width: 50%), caption: "Power Transformed")
